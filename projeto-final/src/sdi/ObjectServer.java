@@ -17,10 +17,7 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 		
 		this.serverName = serverName;
 		
-		//TODO
-		// Conectar com outro banco
-		// chamar o getMessageHistory do outro servidor
-		// salvar a lista recupera deste outro servidor
+		this.recoverMessageHistory();
 	}
 	
 	List<MessageData> list = new ArrayList<>();
@@ -53,6 +50,32 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
     public List<MessageData> getMessageHistory() {
     	return this.list;
     }
+	
+	/**
+	 * Recupera o histórico, se houver, de outro servidor que já esteja rodando 
+	 */
+	private void recoverMessageHistory() {		
+
+		try {
+			
+			RemoteObjectInterface remoteObject = connect();
+			
+			if(remoteObject == null) {
+				System.out.println("\nNenhum servidor disponível para recuperar o histórico de mensagem!");
+				return;
+			}
+			
+			System.out.println("\nRecuperando histórico de mensagems");
+			List<MessageData> messageList = remoteObject.getMessageHistory();
+			for (MessageData messageData : messageList) {
+				this.storeUserMessage(messageData);
+			}
+		} catch (RemoteException e) {
+			System.out.println("\nNenhum servidor disponível para recuperar o histórico de mensagem!");
+		}
+			
+			
+	}
 	
 	private void replicateUserMessage(MessageData messageData) {
 		List<String> listaServidores = getListaServidores();
@@ -89,36 +112,32 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 	                break;
 	            }
 	            catch(RemoteException re){
-	                System.out.println("Erro Remoto: "+re.toString());
+	                //System.out.println("Erro Remoto: "+re.toString());
 	            }
 	            catch(Exception e){
-	                System.out.println("Erro Local: "+e.toString());
+	                //System.out.println("Erro Local: "+e.toString());
 	            }
-	        }
-	        
-	        if(ret == null) {
-	        	System.out.println("Não foi possível conectar em nenhum servidor!"); //TODO reescrever
 	        }
     	} else {    		
             try{            	
             	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverNameParam);
             }
             catch(RemoteException re){
-                System.out.println("Erro Remoto: "+re.toString());
+                //System.out.println("Erro Remoto: "+re.toString());
             }
             catch(Exception e){
-                System.out.println("Erro Local: "+e.toString());
+                //System.out.println("Erro Local: "+e.toString());
             }    		
     	}
         
         return ret;    	
     }
     
-    private static List<String> getListaServidores() {
+    private List<String> getListaServidores() {
     	List<String> ret = new ArrayList<>();
     	for(int i = 1; i <= ServerApplication.MAX_SERVER_QUANTITY; i++) {
     		String serverName = "Server" + i;
-    		if(!serverName.equals(serverName)) {
+    		if(!this.serverName.equals(serverName)) {
     			ret.add("Server" + i);
     		}
     	}

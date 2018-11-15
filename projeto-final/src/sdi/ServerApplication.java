@@ -23,7 +23,7 @@ public class ServerApplication{
             String serverName = "Server" + serverId;
             objetoServidor = new ObjectServer(serverName);
             Naming.rebind("rmi://localhost/" + serverName, objetoServidor);
-            System.out.println(serverName + " iniciado!");
+            System.out.println("\n" + serverName + " iniciado!");
         }
         catch(RemoteException re){
             System.out.println("Erro Remoto: "+re.toString());
