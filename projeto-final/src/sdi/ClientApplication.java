@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.swing.*;
 
-public class AplicacaoCliente{
+public class ClientApplication{
 		
     public static void main(String argv[]){    	
     	sendMessage();
@@ -14,13 +14,13 @@ public class AplicacaoCliente{
         
     }
     
-    private static Hello connect() {
-    	Hello ret = null;
+    private static RemoteObjectInterface connect() {
+    	RemoteObjectInterface ret = null;
 
         List<String> servidores = getListaServidores();
         for(String name : servidores) {            
             try{            	
-            	ret = (Hello) Naming.lookup("rmi://localhost/" + name);                
+            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + name);                
                 break;
             }
             catch(RemoteException re){
@@ -43,7 +43,7 @@ public class AplicacaoCliente{
         String dados;        
         dados = JOptionPane.showInputDialog(null,"Entre com o dado a ser impresso pelo Objeto Remoto","Entrada de Dados",JOptionPane.QUESTION_MESSAGE);
         
-        Hello objetoRemoto;
+        RemoteObjectInterface objetoRemoto;
         objetoRemoto = connect();
         
         if(objetoRemoto == null) {
@@ -60,7 +60,7 @@ public class AplicacaoCliente{
     }
     
     private static void getAndShowMessageHistory() {
-        Hello objetoRemoto;
+        RemoteObjectInterface objetoRemoto;
         objetoRemoto = connect();
         
         if(objetoRemoto == null) {
@@ -82,7 +82,7 @@ public class AplicacaoCliente{
     
     private static List<String> getListaServidores() {
     	List<String> ret = new ArrayList<>();
-    	for(int i = 1; i <= AplicacaoServidora.MAX_SERVER_QUANTITY; i++) {
+    	for(int i = 1; i <= ServerApplication.MAX_SERVER_QUANTITY; i++) {
     		ret.add("Server" + i);
     	}
 		return ret;    	

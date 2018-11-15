@@ -8,10 +8,10 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-public class HelloServidora extends UnicastRemoteObject implements Hello{
+public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInterface{
 	private static final long serialVersionUID = 1L;
 
-	public HelloServidora() throws RemoteException{
+	public ObjectServer() throws RemoteException{
 		//TODO
 		// Conectar com outro banco
 		// chamar o getMessageHistory do outro servidor
@@ -32,14 +32,16 @@ public class HelloServidora extends UnicastRemoteObject implements Hello{
 	@Override
     public MessageData storeUserMessage(String message) {
     	MessageData messageData = new MessageData(message);
-    	this.list.add(messageData);
+    	storeUserMessage(messageData);
     	return messageData;
     	
     }
 
 	@Override
-    public void storeUserMessage(MessageData message) {
-    	this.list.add(message);    	
+    public MessageData storeUserMessage(MessageData message) {
+		System.out.println("Salvando mensagem: " + message);
+    	this.list.add(message);
+		return message;
     }
 
 	@Override
@@ -48,25 +50,29 @@ public class HelloServidora extends UnicastRemoteObject implements Hello{
     }
 	
 	private void replicateUserMessage(MessageData messageData) {
+		List<String> listaServidores = getListaServidores();
+		for (String serverName : listaServidores) {
+			
+		}
 		//TODo percorrer com for todos os servidores
 		//Conectar em cada um
 		//objetoRemoto.storeUserMessage(messageData);
 	}
 
     
-    private Hello connect() {
+    private RemoteObjectInterface connect() {
     	return connect(null);
     }
     
-    private Hello connect(Integer serverId) {
-    	Hello ret = null;
+    private RemoteObjectInterface connect(String serverNameParam) {
+    	RemoteObjectInterface ret = null;
     	
-    	if(serverId == null) {
+    	if(serverNameParam == null) {
 
 	        List<String> servidores = getListaServidores();
-	        for(String name : servidores) {            
+	        for(String serverName : servidores) {            
 	            try{            	
-	            	ret = (Hello) Naming.lookup("rmi://localhost/" + name);                
+	            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverName);                
 	                break;
 	            }
 	            catch(RemoteException re){
@@ -80,11 +86,9 @@ public class HelloServidora extends UnicastRemoteObject implements Hello{
 	        if(ret == null) {
 	        	System.out.println("Não foi possível conectar em nenhum servidor!"); //TODO reescrever
 	        }
-    	} else {
-    		String serverName = "Server" + serverId;   
-    		
+    	} else {    		
             try{            	
-            	ret = (Hello) Naming.lookup("rmi://localhost/" + serverName);
+            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverNameParam);
             }
             catch(RemoteException re){
                 System.out.println("Erro Remoto: "+re.toString());
@@ -99,7 +103,7 @@ public class HelloServidora extends UnicastRemoteObject implements Hello{
     
     private static List<String> getListaServidores() {
     	List<String> ret = new ArrayList<>();
-    	for(int i = 1; i <= AplicacaoServidora.MAX_SERVER_QUANTITY; i++) {
+    	for(int i = 1; i <= ServerApplication.MAX_SERVER_QUANTITY; i++) {
     		ret.add("Server" + i);
     	}
 		return ret;    	

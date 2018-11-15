@@ -1,2 +1,2 @@
 #!/bin/bash
-rmic sdi.HelloServidora
+rmic sdi.ObjectServer

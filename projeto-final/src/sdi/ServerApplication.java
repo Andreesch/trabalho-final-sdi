@@ -3,13 +3,13 @@ package sdi;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Scanner;
-public class AplicacaoServidora{	
+public class ServerApplication{	
 	
 	public static final int MAX_SERVER_QUANTITY = 10;
 
 	@SuppressWarnings("resource")
     public static void main(String argv[]){
-        HelloServidora objetoServidor;
+        ObjectServer objetoServidor;
 
         try{	
         	String serverId = null;
@@ -20,7 +20,7 @@ public class AplicacaoServidora{
 				serverId = s.nextLine();
         	}        	
         	
-            objetoServidor = new HelloServidora();
+            objetoServidor = new ObjectServer();
             String serverName = "Server" + serverId;
             Naming.rebind("rmi://localhost/" + serverName, objetoServidor);
             System.out.println(serverName + " iniciado!");

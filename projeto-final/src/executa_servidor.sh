@@ -1,2 +1,2 @@
 #!/bin/bash
-java sdi.AplicacaoServidora
+java sdi.ServerApplication

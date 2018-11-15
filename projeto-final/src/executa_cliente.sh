@@ -1,2 +1,2 @@
 #!/bin/bash
-java sdi.AplicacaoCliente
+java sdi.ClientApplication

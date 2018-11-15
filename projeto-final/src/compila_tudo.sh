@@ -1,5 +1,5 @@
 #!/bin/bash
-javac sdi/Hello.java
-javac sdi/HelloServidora.java
-javac sdi/AplicacaoServidora.java
-javac sdi/AplicacaoCliente.java
+javac sdi/RemoteObjectInterface.java
+javac sdi/ObjectServer.java
+javac sdi/ServerApplication.java
+javac sdi/ClientApplication.java
