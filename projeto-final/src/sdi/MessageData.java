@@ -1,13 +1,16 @@
 package sdi;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class MessageData {
+public class MessageData implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
 	private String message;
 	private Date date;
 	
-	public MessageData(String message2) {
+	public MessageData(String message) {
+		this.message = message;
 		this.date = new Date();
 	}
 	

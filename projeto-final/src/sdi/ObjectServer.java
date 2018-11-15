@@ -10,8 +10,13 @@ import javax.swing.JOptionPane;
 
 public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInterface{
 	private static final long serialVersionUID = 1L;
+	
+	String serverName;
 
-	public ObjectServer() throws RemoteException{
+	public ObjectServer(String serverName) throws RemoteException{
+		
+		this.serverName = serverName;
+		
 		//TODO
 		// Conectar com outro banco
 		// chamar o getMessageHistory do outro servidor
@@ -39,7 +44,7 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 
 	@Override
     public MessageData storeUserMessage(MessageData message) {
-		System.out.println("Salvando mensagem: " + message);
+		System.out.println("Salvando mensagem: " + message.getMessage());
     	this.list.add(message);
 		return message;
     }
@@ -52,11 +57,19 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 	private void replicateUserMessage(MessageData messageData) {
 		List<String> listaServidores = getListaServidores();
 		for (String serverName : listaServidores) {
+			RemoteObjectInterface remoteObject = connect(serverName);
 			
+			if(remoteObject == null) {
+				System.out.println("Não foi possível replicar para o servidor " + serverName);
+				continue;
+			}
+
+	        try {
+	        	remoteObject.storeUserMessage(messageData);
+			} catch (RemoteException e) {
+				System.out.println("Não foi possível replicar para o servidor " + serverName);
+			}
 		}
-		//TODo percorrer com for todos os servidores
-		//Conectar em cada um
-		//objetoRemoto.storeUserMessage(messageData);
 	}
 
     
@@ -104,7 +117,10 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
     private static List<String> getListaServidores() {
     	List<String> ret = new ArrayList<>();
     	for(int i = 1; i <= ServerApplication.MAX_SERVER_QUANTITY; i++) {
-    		ret.add("Server" + i);
+    		String serverName = "Server" + i;
+    		if(!serverName.equals(serverName)) {
+    			ret.add("Server" + i);
+    		}
     	}
 		return ret;    	
     }

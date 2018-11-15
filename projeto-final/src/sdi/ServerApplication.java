@@ -19,9 +19,9 @@ public class ServerApplication{
 				Scanner s = new Scanner(System.in);
 				serverId = s.nextLine();
         	}        	
-        	
-            objetoServidor = new ObjectServer();
+
             String serverName = "Server" + serverId;
+            objetoServidor = new ObjectServer(serverName);
             Naming.rebind("rmi://localhost/" + serverName, objetoServidor);
             System.out.println(serverName + " iniciado!");
         }
