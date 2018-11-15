@@ -94,7 +94,7 @@ public class ClientApplication{
 			objetoRemoto.echo(dados);
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário
-			e.printStackTrace();
+			System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
 		}
     }
     
