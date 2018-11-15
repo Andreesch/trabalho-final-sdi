@@ -1,38 +1,72 @@
 package sdi;
 
 import java.rmi.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.swing.*;
 
 public class ClientApplication{
+	public static String DEFAULT_ERROR_CONNECTION_MESSAGE = "Não foi possível conectar a nenhum servidor. Por favor, certifique-se que há pelo menos um servidor ligado!\n";
 		
-    public static void main(String argv[]){    	
-    	sendMessage();
-    	getAndShowMessageHistory();       
+    public static void main(String argv[]){
+    	createMenuToUser();       
         
+    }
+    
+    private static void createMenuToUser() {
+    	System.out.println("Servidor de ECHO - Versão Cliente");
+    	System.out.println("\n----- Opções disponíveis -----");
+    	System.out.println("[1] - Enviar mensagem ao servidor");
+    	System.out.println("[2] - Obter histórico de mensagens enviadas");
+    	System.out.println("[0] - Sair");
+    	System.out.println("----- Opções disponíveis -----\n");
+    	
+    	Integer choice = null;
+    	
+    	do {
+    		System.out.print("Opção desejada: ");
+        	Scanner scanner = new Scanner(System.in);
+    	    choice = scanner.nextInt();
+    	
+	    	// envio de msg
+	    	if (choice == 1) {
+	        	sendMessage();
+	    	} else if (choice == 2) {
+	    		getAndShowMessageHistory();
+	    	} else if (choice == 0) {
+	    		return;
+	    	} else {
+	    		System.out.println("\nOpção inválida! digite uma opção informada acima.");
+	    	}
+	    	
+    	} while (choice != 0);
     }
     
     private static RemoteObjectInterface connect() {
     	RemoteObjectInterface ret = null;
 
-        List<String> servidores = getListaServidores();
+        List<String> servidores = getServerList();
         for(String name : servidores) {            
             try{            	
             	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + name);                
                 break;
             }
             catch(RemoteException re){
-                System.out.println("Erro Remoto: "+re.toString());
+            	// Não exibe erro ao usuário, continua execução.
+//                System.out.println("Erro Remoto: "+re.toString());
             }
             catch(Exception e){
-                System.out.println("Erro Local: "+e.toString());
+            	// Não exibe erro ao usuário, continua execução.
+//                System.out.println("Erro Local: "+e.toString());
             }
         }
         
         if(ret == null) {
-        	System.out.println("Não foi possível conectar em nenhum servidor!"); //TODO reescrever
+        	System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
         }
         
         return ret;    	
@@ -43,11 +77,16 @@ public class ClientApplication{
         String dados;        
         dados = JOptionPane.showInputDialog(null,"Entre com o dado a ser impresso pelo Objeto Remoto","Entrada de Dados",JOptionPane.QUESTION_MESSAGE);
         
+        if (dados == null) {
+        	System.out.println("Não inseriu nenhuma mensagem, retornando ao menu.\n");
+        	return;
+        }
+        
         RemoteObjectInterface objetoRemoto;
         objetoRemoto = connect();
         
         if(objetoRemoto == null) {
-        	System.out.println("Não foi possível conectar em nenhum servidor!"); //TODO reescrever
+        	System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
         	return;
         }
         
@@ -60,6 +99,7 @@ public class ClientApplication{
     }
     
     private static void getAndShowMessageHistory() {
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         RemoteObjectInterface objetoRemoto;
         objetoRemoto = connect();
         
@@ -71,16 +111,17 @@ public class ClientApplication{
 			List<MessageData> list = objetoRemoto.getMessageHistory();
 			
 			for (MessageData messageData : list) {
-				System.out.println(messageData.getMessage()); //TODO exibir data
+				System.out.println("Data de recebimento: "  + sdf.format(messageData.getDate()));
+				System.out.println("Mensagem recebida: " + messageData.getMessage()); //TODO exibir data
 			}
 			
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário
-			e.printStackTrace();
+			System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
 		}
     }
     
-    private static List<String> getListaServidores() {
+    private static List<String> getServerList() {
     	List<String> ret = new ArrayList<>();
     	for(int i = 1; i <= ServerApplication.MAX_SERVER_QUANTITY; i++) {
     		ret.add("Server" + i);
