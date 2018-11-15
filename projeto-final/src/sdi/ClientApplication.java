@@ -1,13 +1,13 @@
 package sdi;
 
-import java.rmi.*;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class ClientApplication{
 	public static String DEFAULT_ERROR_CONNECTION_MESSAGE = "Não foi possível conectar a nenhum servidor. Por favor, certifique-se que há pelo menos um servidor ligado!\n";
@@ -110,9 +110,13 @@ public class ClientApplication{
         try {
 			List<MessageData> list = objetoRemoto.getMessageHistory();
 			
+			if (list == null || list.size() == 0) {
+				System.out.println("Não há nenhuma mensagem no histórico!");
+				return;
+			}
+			
 			for (MessageData messageData : list) {
-				System.out.println("Data de recebimento: "  + sdf.format(messageData.getDate()));
-				System.out.println("Mensagem recebida: " + messageData.getMessage()); //TODO exibir data
+				System.out.println("["+ sdf.format(messageData.getDate() + "]" + ": " +messageData.getMessage()));
 			}
 			
 		} catch (RemoteException e) {
