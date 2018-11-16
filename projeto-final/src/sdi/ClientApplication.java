@@ -91,7 +91,11 @@ public class ClientApplication{
         }
         
         try {
-			objetoRemoto.echo(dados);
+			String serverResponse = objetoRemoto.echo(dados);
+			
+			if (serverResponse != null && !serverResponse.isEmpty()) {
+				System.out.println(serverResponse + "\n");
+			}
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário
 			System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
@@ -107,6 +111,8 @@ public class ClientApplication{
         	return;
         }
     	
+        System.out.println();
+        
         try {
 			List<MessageData> list = objetoRemoto.getMessageHistory();
 			
@@ -116,8 +122,10 @@ public class ClientApplication{
 			}
 			
 			for (MessageData messageData : list) {
-				System.out.println("["+ sdf.format(messageData.getDate() + "]" + ": " +messageData.getMessage()));
+				System.out.println("["+ sdf.format(messageData.getDate()) + "]" + ": " +messageData.getMessage());
 			}
+			
+			System.out.println();
 			
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário
