@@ -1,13 +1,13 @@
 package sdi;
 
-import java.rmi.*;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class ClientApplication{
 	public static String DEFAULT_ERROR_CONNECTION_MESSAGE = "Não foi possível conectar a nenhum servidor. Por favor, certifique-se que há pelo menos um servidor ligado!\n";
@@ -52,16 +52,19 @@ public class ClientApplication{
         List<String> servidores = getServerList();
         for(String name : servidores) {            
             try{            	
-            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + name);                
+            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + name);            	
+           		ret.connectionTest();            	
                 break;
             }
             catch(RemoteException re){
-            	// Não exibe erro ao usuário, continua execução.
-//                System.out.println("Erro Remoto: "+re.toString());
+        		//Servidor registrado, mas não conectado, irá passar para o próximo
+            	ret = null;
+            	continue;
             }
             catch(Exception e){
-            	// Não exibe erro ao usuário, continua execução.
-//                System.out.println("Erro Local: "+e.toString());
+        		//Servidor registrado, mas não conectado, irá passar para o próximo
+            	ret = null;
+            	continue;
             }
         }
         

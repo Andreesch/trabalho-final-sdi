@@ -1,5 +1,6 @@
 package sdi;
 
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -108,25 +109,33 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 	        List<String> servidores = getListaServidores();
 	        for(String serverName : servidores) {            
 	            try{            	
-	            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverName);                
+	            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverName);        	
+	           		ret.connectionTest();            	          
 	                break;
 	            }
 	            catch(RemoteException re){
-	                //System.out.println("Erro Remoto: "+re.toString());
+	        		//Servidor registrado, mas não conectado, irá passar para o próximo
+	            	ret = null;
+	            	continue;
 	            }
 	            catch(Exception e){
-	                //System.out.println("Erro Local: "+e.toString());
+	        		//Servidor registrado, mas não conectado, irá passar para o próximo
+	            	ret = null;
+	            	continue;
 	            }
 	        }
     	} else {    		
             try{            	
-            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverNameParam);
+            	ret = (RemoteObjectInterface) Naming.lookup("rmi://localhost/" + serverNameParam);  	
+           		ret.connectionTest();            	
             }
             catch(RemoteException re){
-                //System.out.println("Erro Remoto: "+re.toString());
+        		//Servidor registrado, mas não conectado, irá passar para o próximo
+            	ret = null;
             }
             catch(Exception e){
-                //System.out.println("Erro Local: "+e.toString());
+        		//Servidor registrado, mas não conectado, irá passar para o próximo
+            	ret = null;
             }    		
     	}
         
@@ -143,4 +152,9 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
     	}
 		return ret;    	
     }
+
+	@Override
+	public void connectionTest() throws RemoteException, ConnectException {
+		System.out.println("Cliente conectado!");
+	}
 }
