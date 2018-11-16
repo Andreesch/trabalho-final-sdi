@@ -94,10 +94,14 @@ public class ClientApplication{
         }
         
         try {
-			objetoRemoto.echo(dados);
+			String serverResponse = objetoRemoto.echo(dados);
+			
+			if (serverResponse != null && !serverResponse.isEmpty()) {
+				System.out.println(serverResponse + "\n");
+			}
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário
-			e.printStackTrace();
+			System.out.println(DEFAULT_ERROR_CONNECTION_MESSAGE);
 		}
     }
     
@@ -110,13 +114,21 @@ public class ClientApplication{
         	return;
         }
     	
+        System.out.println();
+        
         try {
 			List<MessageData> list = objetoRemoto.getMessageHistory();
 			
-			for (MessageData messageData : list) {
-				System.out.println("Data de recebimento: "  + sdf.format(messageData.getDate()));
-				System.out.println("Mensagem recebida: " + messageData.getMessage()); //TODO exibir data
+			if (list == null || list.size() == 0) {
+				System.out.println("Não há nenhuma mensagem no histórico!");
+				return;
 			}
+			
+			for (MessageData messageData : list) {
+				System.out.println("["+ sdf.format(messageData.getDate()) + "]" + ": " +messageData.getMessage());
+			}
+			
+			System.out.println();
 			
 		} catch (RemoteException e) {
 			// TODO Mostrar mensagem de erro ao usuário

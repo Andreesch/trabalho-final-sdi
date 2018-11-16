@@ -10,12 +10,14 @@ public class ServerApplication{
 	@SuppressWarnings("resource")
     public static void main(String argv[]){
         ObjectServer objetoServidor;
-
+        System.out.println("Servidor de ECHO - Versão Servidor");
+        
         try{	
         	String serverId = null;
         	
         	while(serverId == null || !validateServerId(serverId)) {
-        		System.out.println("\nDigite um número entre 1 e " + MAX_SERVER_QUANTITY);
+        		
+        		System.out.println("Para o IDENTIFICADOR do servidor, digite um número entre 1 e " + MAX_SERVER_QUANTITY + ":");
 				Scanner s = new Scanner(System.in);
 				serverId = s.nextLine();
         	}        	
@@ -38,10 +40,17 @@ public class ServerApplication{
     	try {
     		id = Integer.valueOf(idString);
     	} catch(Exception e) {
-    		System.out.println("\nValor inválido!");
+    		System.out.println("\nValor inválido!\n");
     		return false;
     	}
     	
-    	return id > 0 && id <= MAX_SERVER_QUANTITY;    	
+    	boolean ret = id > 0 && id <= MAX_SERVER_QUANTITY;
+    	
+    	if (!ret) {
+    		System.out.println("\nValor inválido!\n");
+    		return false;
+    	} else {
+    		return true;
+    	}
     }
 }

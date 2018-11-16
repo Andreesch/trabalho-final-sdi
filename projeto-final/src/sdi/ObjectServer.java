@@ -24,12 +24,13 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 	List<MessageData> list = new ArrayList<>();
 
 	@Override
-    public void echo(String oqImprimir) throws RemoteException{
-    	System.out.println(oqImprimir);
-        JOptionPane.showMessageDialog(null,oqImprimir.toUpperCase(),"Mensagem do Objeto Cliente",JOptionPane.INFORMATION_MESSAGE);
-        MessageData messageData = storeUserMessage(oqImprimir);
+    public String echo(String userMsg) throws RemoteException{
+    	System.out.println(userMsg);
+        JOptionPane.showMessageDialog(null,userMsg.toUpperCase(),"Mensagem do Objeto Cliente",JOptionPane.INFORMATION_MESSAGE);
+        MessageData messageData = storeUserMessage(userMsg);
         replicateUserMessage(messageData);
-        //TODO: Retornar para o cliente
+        
+		return "["+serverName+ "]" + ": " + userMsg;
     }
 
 	@Override
@@ -62,17 +63,17 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 			RemoteObjectInterface remoteObject = connect();
 			
 			if(remoteObject == null) {
-				System.out.println("\nNenhum servidor disponível para recuperar o histórico de mensagem!");
+				System.out.println("\n ---> Nenhum servidor disponível para recuperar o histórico de mensagem!");
 				return;
 			}
 			
-			System.out.println("\nRecuperando histórico de mensagems");
+			System.out.println("\n ---> Recuperando histórico de mensagens...");
 			List<MessageData> messageList = remoteObject.getMessageHistory();
 			for (MessageData messageData : messageList) {
 				this.storeUserMessage(messageData);
 			}
 		} catch (RemoteException e) {
-			System.out.println("\nNenhum servidor disponível para recuperar o histórico de mensagem!");
+			System.out.println("\n ---> Nenhum servidor disponível para recuperar o histórico de mensagem!");
 		}
 			
 			
@@ -155,6 +156,6 @@ public class ObjectServer extends UnicastRemoteObject implements RemoteObjectInt
 
 	@Override
 	public void connectionTest() throws RemoteException, ConnectException {
-		System.out.println("Cliente conectado!");
+//		System.out.println("Cliente conectado!");
 	}
 }
